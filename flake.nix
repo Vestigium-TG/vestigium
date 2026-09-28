@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs.nixpkgs.url = "https://channels.nixos.org/nixos-unstable/nixexprs.tar.zst";
 
   outputs = {nixpkgs, ...}: let
     pkgs = import nixpkgs {
@@ -19,6 +19,7 @@
         prettier
         typescript-language-server
 
+        # Misc
         alejandra
         dockerfile-language-server
         git
