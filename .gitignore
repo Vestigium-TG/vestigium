@@ -1,5 +1,10 @@
 .direnv
+.env
+
+backend/src/backend/__pycache__
+
 frontend/nginx.conf
+
 
 .vscode/*
 !.vscode/extensions.json
