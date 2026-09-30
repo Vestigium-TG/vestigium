@@ -25,6 +25,7 @@
         git
         nixd
         podman-compose
+        vscode-css-languageserver
       ];
     };
   };
