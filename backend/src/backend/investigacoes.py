@@ -162,6 +162,28 @@ def buscar_investigacao(
 
     resultado = cursor.fetchone()
 
+    cursor.execute(
+        """
+        SELECT id, investigacao_id, fonte_id, texto, relevancia, data_criacao
+        FROM AFIRMACAO
+        WHERE investigacao_id = %s
+        ORDER BY data_criacao
+        """,
+        (str(investigacao_id),),
+    )
+
+    afirmacoes = [
+        {
+            "id": str(item[0]),
+            "investigacao_id": str(item[1]),
+            "fonte_id": str(item[2]) if item[2] else None,
+            "texto": item[3],
+            "relevancia": item[4],
+            "data_criacao": item[5],
+        }
+        for item in cursor.fetchall()
+    ]
+
     cursor.close()
     conn.close()
 
@@ -180,6 +202,7 @@ def buscar_investigacao(
         "status": resultado[5],
         "data_criacao": resultado[6],
         "data_atualizacao": resultado[7],
+        "afirmacoes": afirmacoes,
     }
 
 

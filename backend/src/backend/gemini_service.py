@@ -35,12 +35,26 @@ def _gerar_lista_json(prompt: str) -> list[str]:
     cliente = _obter_cliente()
 
     try:
+        if os.getenv("GEMINI_INDISPONIVEL", "false").lower() == "true":
+            raise genai_errors.ServerError(
+                503,
+                {
+                    "error": {
+                        "status": "UNAVAILABLE",
+                        "message": "Indisponibilidade simulada do serviço Gemini",
+                    }
+                },
+            )
+
         resposta = cliente.models.generate_content(
             model=_MODELO,
             contents=prompt,
             config={
                 "response_mime_type": "application/json",
-                "response_schema": {"type": "ARRAY", "items": {"type": "STRING"}},
+                "response_schema": {
+                    "type": "ARRAY",
+                    "items": {"type": "STRING"},
+                },
             },
         )
     except (genai_errors.ServerError, genai_errors.APIError) as erro:

@@ -1,6 +1,7 @@
 services:
   bd:
     image: docker.io/vinilmt/vestigium_bd:latest
+    # build: ./bd
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -10,17 +11,19 @@ services:
 
   backend:
     image: docker.io/vinilmt/vestigium_backend:latest
+    # build: ./backend
     environment:
       DATABASE_URL: postgresql://postgres:postgres@bd:5432/vestigium
+      GEMINI_INDISPONIVEL: false
     env_file:
       - ./.env
     ports:
       - "8000:8000"
     depends_on:
       - bd
-
   frontend:
     image: docker.io/vinilmt/vestigium_frontend:latest
+    # build: ./frontend
     environment:
       API_URL: http://localhost:8000
     ports:

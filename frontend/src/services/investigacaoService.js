@@ -30,10 +30,17 @@ async function remover(id) {
   return response.data;
 }
 
+async function identificarAfirmacoes(id) {
+	const response = await api.post(`/investigacoes/${id}/afirmacoes`);
+
+	return response.data;
+}
+
 export default {
   listar,
   buscarPorId,
   criar,
   atualizar,
   remover,
+  identificarAfirmacoes,
 };
