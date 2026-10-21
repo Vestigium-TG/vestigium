@@ -3,9 +3,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SparkIcon } from "../../components/Icon";
 import InvestigacaoShell from "../../components/InvestigacaoShell/InvestigacaoShell";
 import SecaoEtapa from "../../components/SecaoEtapa/SecaoEtapa";
+import useFontes from "../../hooks/useFontes";
 import useInvestigacoes from "../../hooks/useInvestigacoes";
 import investigacaoService from "../../services/investigacaoService";
+// UC08 e UC09 são consumidos pelos componentes PerguntasOrientadoras e PesquisaFontes,
+// que utilizam ../../services/afirmacaoService para chamar os endpoints correspondentes.
 import { ROTAS } from "../../utils/investigacao";
+import FontesSelecionadas from "./FontesSelecionadas";
+import PerguntasOrientadoras from "./PerguntasOrientadoras";
+import PesquisaFontes from "./PesquisaFontes";
 import "./afirmacao.css";
 
 // Etapas da investigação de uma afirmação. Alimenta as seções e o índice lateral.
@@ -52,6 +58,12 @@ function Afirmacao() {
 	const { investigacaoId, afirmacaoId } = useParams();
 
 	const { investigacoes, carregando: carregandoLista } = useInvestigacoes();
+	const {
+		fontes,
+		carregando: carregandoFontes,
+		erro: erroFontes,
+		registrar: registrarFonte,
+	} = useFontes(investigacaoId);
 
 	const [investigacao, setInvestigacao] = useState(null);
 	const [afirmacao, setAfirmacao] = useState(null);
@@ -86,7 +98,7 @@ function Afirmacao() {
 			console.error("Erro ao carregar afirmação:", error);
 			setErro(
 				error.response?.data?.detail ||
-					"Não foi possível carregar a afirmação.",
+				"Não foi possível carregar a afirmação.",
 			);
 		} finally {
 			setCarregando(false);
@@ -109,6 +121,41 @@ function Afirmacao() {
 
 	function voltar() {
 		navigate(ROTAS.investigacao(investigacaoId));
+	}
+
+	// UC08: PerguntasOrientadoras consome listarPerguntas/gerarPerguntas do afirmacaoService.
+	// UC09: PesquisaFontes consome gerarConsultas/pesquisarFontes; useFontes carrega e registra fontes.
+	// Conteúdo de cada etapa. Etapa sem conteúdo (undefined) mostra o cartão "Em breve".
+	function conteudoDaEtapa(id) {
+		switch (id) {
+			case "perguntas":
+				return <PerguntasOrientadoras key={afirmacao.id} afirmacaoId={afirmacao.id} />;
+			case "pesquisa":
+				return (
+					<PesquisaFontes
+						key={afirmacao.id}
+						afirmacaoId={afirmacao.id}
+						fontes={fontes}
+						onSelecionar={registrarFonte}
+					/>
+				);
+			case "fontes":
+				return (
+					<FontesSelecionadas
+						fontes={fontes}
+						carregando={carregandoFontes}
+						erro={erroFontes}
+					/>
+				);
+			default:
+				return undefined;
+		}
+	}
+
+	function tituloDaEtapa(etapa) {
+		if (etapa.id === "evidencias") return `${etapa.titulo} (${evidencias})`;
+		if (etapa.id === "fontes") return `${etapa.titulo} (${fontes.length})`;
+		return etapa.titulo;
 	}
 
 	return (
@@ -203,9 +250,8 @@ function Afirmacao() {
 
 								<div className="afirmacao-meta">
 									<span
-										className={`afirmacao-status ${
-											evidencias > 0 ? "afirmacao-status-ativa" : ""
-										}`}
+										className={`afirmacao-status ${evidencias > 0 ? "afirmacao-status-ativa" : ""
+											}`}
 									>
 										{evidencias > 0 ? "Em investigação" : "Não iniciada"}
 									</span>
@@ -243,16 +289,14 @@ function Afirmacao() {
 								<SecaoEtapa
 									key={etapa.id}
 									id={`etapa-${etapa.id}`}
-									titulo={
-										etapa.id === "evidencias"
-											? `${etapa.titulo} (${evidencias})`
-											: etapa.titulo
-									}
+									titulo={tituloDaEtapa(etapa)}
 									selo={etapa.selo}
 									ia={etapa.ia}
 									caso={etapa.caso}
 									descricao={etapa.descricao}
-								/>
+								>
+									{conteudoDaEtapa(etapa.id)}
+								</SecaoEtapa>
 							))}
 						</div>
 

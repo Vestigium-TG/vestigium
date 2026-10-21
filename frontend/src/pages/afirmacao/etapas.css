@@ -1,0 +1,365 @@
+/* Estilos compartilhados pelas etapas da tela da afirmação (UC08 e UC09). */
+
+.etapa-bloco,
+.etapa-lista,
+.etapa-resultados {
+	display: grid;
+	gap: 12px;
+}
+
+.etapa-card {
+	padding: 16px 18px;
+	box-sizing: border-box;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	background: #ffffff;
+}
+
+.etapa-card-ativo {
+	border-color: #2f5dff;
+}
+
+.etapa-card-topo {
+	margin-bottom: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.etapa-ia {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #7c3aed;
+	font-size: 0.76rem;
+	font-weight: 750;
+}
+
+.etapa-dica,
+.etapa-trecho {
+	margin: 0;
+	color: #94a3b8;
+	font-size: 0.72rem;
+	line-height: 1.5;
+}
+
+.etapa-trecho {
+	margin-top: 10px;
+	color: #475569;
+	font-size: 0.76rem;
+	line-height: 1.55;
+}
+
+.etapa-acoes {
+	margin-top: 14px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.etapa-subtitulo {
+	margin: 4px 0 0;
+	color: #64748b;
+	font-size: 0.74rem;
+	font-weight: 700;
+}
+
+.etapa-subtitulo span {
+	font-weight: 500;
+}
+
+/* Perguntas */
+.etapa-perguntas {
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 10px;
+	list-style: none;
+}
+
+.etapa-pergunta {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	color: #172033;
+	font-size: 0.84rem;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.etapa-numero {
+	width: 22px;
+	height: 22px;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 6px;
+	background: #f3efff;
+	color: #7c3aed;
+	font-size: 0.64rem;
+	font-weight: 800;
+}
+
+/* Sugestões de pesquisa */
+.etapa-chips {
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	list-style: none;
+}
+
+.etapa-chip {
+	padding: 6px 12px;
+	border: 1px solid #e2e8f0;
+	border-radius: 999px;
+	background: #ffffff;
+	color: #334155;
+	font: inherit;
+	font-size: 0.74rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.etapa-chip:hover:not(:disabled) {
+	border-color: #2f5dff;
+	color: #2f5dff;
+}
+
+.etapa-chip-ativo {
+	border-color: #2f5dff;
+	background: #eff3ff;
+	color: #2f5dff;
+}
+
+.etapa-chip:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* Resultados e fontes */
+.etapa-resultado-topo {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 14px;
+}
+
+.etapa-resultado-info {
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	flex: 1;
+}
+
+.etapa-link {
+	color: #2f5dff;
+	font-size: 0.84rem;
+	font-weight: 700;
+	line-height: 1.4;
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+
+.etapa-link:hover {
+	text-decoration: underline;
+}
+
+.etapa-dominio {
+	color: #94a3b8;
+	font-size: 0.68rem;
+	overflow-wrap: anywhere;
+}
+
+.etapa-selecionada {
+	padding: 5px 9px;
+	flex-shrink: 0;
+	border-radius: 6px;
+	background: #eff3ff;
+	color: #2f5dff;
+	font-size: 0.7rem;
+	font-weight: 750;
+	white-space: nowrap;
+}
+
+.etapa-fonte {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.etapa-inicial {
+	width: 28px;
+	height: 28px;
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+	background: #eff3ff;
+	color: #2f5dff;
+	font-size: 0.72rem;
+	font-weight: 800;
+}
+
+.etapa-tag {
+	padding: 3px 7px;
+	flex-shrink: 0;
+	border-radius: 5px;
+	background: #f3f4f6;
+	color: #64748b;
+	font-size: 0.64rem;
+	font-weight: 700;
+}
+
+/* Adicionar fonte manualmente */
+.etapa-manual {
+	display: grid;
+	gap: 12px;
+}
+
+.etapa-manual strong {
+	color: #172033;
+	font-size: 0.78rem;
+}
+
+.etapa-manual-campos {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.etapa-input {
+	min-width: 160px;
+	min-height: 34px;
+	padding: 7px 10px;
+	box-sizing: border-box;
+	flex: 1;
+	border: 1px solid #e2e8f0;
+	border-radius: 7px;
+	background: #f9fafb;
+	color: #334155;
+	font: inherit;
+	font-size: 0.76rem;
+	outline: none;
+}
+
+.etapa-input-url {
+	flex: 2 1 240px;
+}
+
+.etapa-input:focus {
+	border-color: #2f5dff;
+	background: #ffffff;
+}
+
+/* Botões */
+.etapa-botao,
+.etapa-botao-texto {
+	font: inherit;
+	cursor: pointer;
+}
+
+.etapa-botao {
+	min-height: 32px;
+	padding: 7px 13px;
+	flex-shrink: 0;
+	border: 1px solid #e5e7eb;
+	border-radius: 6px;
+	background: #ffffff;
+	color: #334155;
+	font-size: 0.72rem;
+	font-weight: 700;
+}
+
+.etapa-botao:hover:not(:disabled) {
+	background: #f8fafc;
+}
+
+.etapa-botao-primario {
+	border-color: #2f5dff;
+	background: #2f5dff;
+	color: #ffffff;
+}
+
+.etapa-botao-primario:hover:not(:disabled) {
+	border-color: #244bd6;
+	background: #244bd6;
+}
+
+.etapa-botao-texto {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: #2f5dff;
+	font-size: 0.7rem;
+	font-weight: 750;
+}
+
+.etapa-botao:disabled,
+.etapa-botao-texto:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+/* Estados */
+.etapa-vazio {
+	min-height: 96px;
+	padding: 22px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 8px;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	background: #ffffff;
+	color: #94a3b8;
+	font-size: 0.72rem;
+	line-height: 1.5;
+	text-align: center;
+}
+
+.etapa-vazio strong {
+	color: #475569;
+	font-size: 0.78rem;
+}
+
+.etapa-erro {
+	padding: 10px 12px;
+	border: 1px solid #fecaca;
+	border-radius: 7px;
+	background: #fff1f2;
+	color: #b91c1c;
+	font-size: 0.76rem;
+	line-height: 1.4;
+}
+
+.etapa-spinner {
+	width: 18px;
+	height: 18px;
+	border: 2px solid #dbe2ef;
+	border-top-color: #2f5dff;
+	border-radius: 50%;
+	animation: etapa-spin 0.8s linear infinite;
+}
+
+@keyframes etapa-spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@media (max-width: 600px) {
+	.etapa-resultado-topo {
+		flex-direction: column;
+	}
+
+	.etapa-botao {
+		align-self: flex-start;
+	}
+}
