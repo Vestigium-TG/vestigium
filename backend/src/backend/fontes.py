@@ -167,3 +167,56 @@ def registrar_fontes(
     conn.close()
 
     return fontes_criadas
+
+
+@router_investigacoes.get("/{investigacao_id}/fontes")
+def listar_fontes(
+    investigacao_id: uuid.UUID,
+    usuario_id: str = Depends(obter_usuario_id_atual),
+):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT usuario_id FROM INVESTIGACAO WHERE id = %s",
+        (str(investigacao_id),),
+    )
+
+    resultado = cursor.fetchone()
+
+    if resultado is None:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=404, detail="Investigação não encontrada")
+
+    if str(resultado[0]) != usuario_id:
+        cursor.close()
+        conn.close()
+        raise HTTPException(status_code=403, detail="Acesso negado")
+
+    cursor.execute(
+        """
+        SELECT id, investigacao_id, url, titulo, conteudo, tipo, data_acesso
+        FROM FONTE
+        WHERE investigacao_id = %s
+        """,
+        (str(investigacao_id),),
+    )
+
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "id": str(item[0]),
+            "investigacao_id": str(item[1]),
+            "url": item[2],
+            "titulo": item[3],
+            "conteudo": item[4],
+            "tipo": item[5],
+            "data_acesso": item[6],
+        }
+        for item in resultados
+    ]
