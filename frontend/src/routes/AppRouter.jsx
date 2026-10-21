@@ -17,8 +17,11 @@ function AppRouter() {
         path="/login"
         element={<Login onSuccess={() => navigate("/investigacoes")} />}
       />
-      <Route path="/register" element={<Register />} />
       <Route
+				path="/register"
+				element={<Register onSuccess={() => navigate("/investigacoes")} />}
+			/>
+			<Route
         path="/investigacoes"
         element={
           <RotaProtegida>

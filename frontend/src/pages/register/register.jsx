@@ -4,7 +4,7 @@ import authService from "../../services/authService";
 import logo from "../../assets/images/logo.png";
 import "./register.css";
 
-function Register() {
+function Register({ onSuccess }) {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -25,14 +25,12 @@ function Register() {
 
     try {
       await authService.register(email, senha);
-      navigate("/login", {
-        state: {
-          sucesso: "Cadastro realizado com sucesso! Agora faça login."
-        }
-      })
+
+      const resultado = await authService.login(email, senha);
+      onSuccess?.(resultado);
     } catch (error) {
       const mensagem = error.response?.data?.detail;
-      setErro(mensagem || "Não foi possível criar a conta. Tente novamente.");
+      setErro(mensagem || "Não foi possível concluir o acesso automático. Tente fazer o login.");
     } finally {
       setCarregando(false);
     }

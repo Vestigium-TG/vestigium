@@ -88,12 +88,6 @@ function Login({ onSuccess }) {
 							required
 						/>
 
-						{/* <div className="login-help-row">
-							<button className="login-help" type="button" disabled>
-								Esqueceu a senha?
-							</button>
-						</div> */}
-
 						{erro && (
 							<p className="login-error" role="alert">
 								{erro}

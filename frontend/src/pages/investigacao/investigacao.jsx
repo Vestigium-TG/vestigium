@@ -434,12 +434,6 @@ function Investigacao() {
 				</aside>
 
 				<div className="investigacao-content-area">
-					<nav className="investigacao-breadcrumb" aria-label="Navegação">
-						<span>Minhas Investigações</span>
-						<Icon size={13}><path d="m9 18 6-6-6-6" /></Icon>
-						<strong>{tituloExibido}</strong>
-					</nav>
-
 			<section className="investigacao-main">
 				{erro && (
 					<div className="investigacao-alert investigacao-alert-error">
@@ -740,10 +734,6 @@ function Investigacao() {
 													<h3>
 														{afirmacao.texto}
 													</h3>
-
-													<span className="investigacao-ai-badge">
-														Identificada por IA
-													</span>
 
 													<div className="investigacao-assertion-progress">
 														<span className="investigacao-assertion-status">
