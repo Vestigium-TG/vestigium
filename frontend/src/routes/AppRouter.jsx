@@ -2,6 +2,7 @@ import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
 import Login from "../pages/login/login";
 import Register from "../pages/register/register";
 import Investigacao from "../pages/investigacao/investigacao";
+import Afirmacao from "../pages/afirmacao/afirmacao"; // <--- Adicionada a importação do Afirmacao
 import Perfil from "../pages/perfil/perfil";
 
 function RotaProtegida({ children }) {
@@ -18,14 +19,30 @@ function AppRouter() {
         element={<Login onSuccess={() => navigate("/investigacoes")} />}
       />
       <Route
-				path="/register"
-				element={<Register onSuccess={() => navigate("/investigacoes")} />}
-			/>
-			<Route
+        path="/register"
+        element={<Register onSuccess={() => navigate("/investigacoes")} />}
+      />
+      <Route
         path="/investigacoes"
         element={
           <RotaProtegida>
             <Investigacao />
+          </RotaProtegida>
+        }
+      />
+      <Route
+        path="/investigacoes/:id"
+        element={
+          <RotaProtegida>
+            <Investigacao />
+          </RotaProtegida>
+        }
+      />
+      <Route
+        path="/investigacoes/:investigacaoId/afirmacoes/:afirmacaoId"
+        element={
+          <RotaProtegida>
+            <Afirmacao />
           </RotaProtegida>
         }
       />

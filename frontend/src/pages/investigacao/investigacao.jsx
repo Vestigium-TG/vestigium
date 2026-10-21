@@ -1,61 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import authService from "../../services/authService";
+import { useNavigate, useParams } from "react-router-dom";
+import Icon from "../../components/Icon";
+import InvestigacaoShell from "../../components/InvestigacaoShell/InvestigacaoShell";
 import investigacaoService from "../../services/investigacaoService";
+import {
+	formatarData,
+	formatarDataHora,
+	formatarStatus,
+	ROTAS,
+} from "../../utils/investigacao";
 import "./investigacao.css";
-
-function formatarData(data) {
-	if (!data) {
-		return "-";
-	}
-
-	return new Intl.DateTimeFormat("pt-BR", {
-		dateStyle: "medium",
-	}).format(new Date(data));
-}
-
-function formatarDataHora(data) {
-	if (!data) {
-		return "-";
-	}
-
-	return new Intl.DateTimeFormat("pt-BR", {
-		dateStyle: "short",
-		timeStyle: "short",
-	}).format(new Date(data));
-}
-
-function formatarStatus(status) {
-	switch (status) {
-		case "em_andamento":
-			return "Em andamento";
-		case "concluida":
-			return "Concluída";
-		case "cancelada":
-			return "Cancelada";
-		default:
-			return status || "-";
-	}
-}
-
-function Icon({ children, size = 16, className = "" }) {
-	return (
-		<svg
-			className={className}
-			width={size}
-			height={size}
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			strokeWidth="1.8"
-			strokeLinecap="round"
-			strokeLinejoin="round"
-			aria-hidden="true"
-		>
-			{children}
-		</svg>
-	);
-}
 
 function Investigacao() {
 	const navigate = useNavigate();
@@ -71,7 +25,6 @@ function Investigacao() {
 	const [status, setStatus] = useState("em_andamento");
 
 	const [modo, setModo] = useState("nova");
-	const [menuAberto, setMenuAberto] = useState(false);
 
 	const [carregando, setCarregando] = useState(true);
 	const [analisando, setAnalisando] = useState(false);
@@ -83,7 +36,6 @@ function Investigacao() {
 
 	const ehEdicao = modo === "editar";
 	const ehNova = modo === "nova";
-	const somenteLeitura = modo === "visualizar";
 
 	const tituloExibido = ehNova
 		? "Nova investigação"
@@ -98,9 +50,11 @@ function Investigacao() {
 		};
 	}, []);
 
+	const { id } = useParams();
+
 	useEffect(() => {
 		carregarInvestigacoes();
-	}, []);
+	}, [id]);
 
 	async function carregarInvestigacoes() {
 		try {
@@ -110,14 +64,17 @@ function Investigacao() {
 			const dados = await investigacaoService.listar();
 			setInvestigacoes(dados);
 
-			if (dados.length > 0 && !investigacaoSelecionada && !ehNova) {
+			// Se houver um ID na URL, carrega essa investigação específica; caso contrário, carrega a primeira
+			if (id) {
+				await selecionarInvestigacao(id);
+			} else if (dados.length > 0 && !investigacaoSelecionada && !ehNova) {
 				await selecionarInvestigacao(dados[0].id);
 			}
 		} catch (error) {
 			console.error("Erro ao carregar investigações:", error);
 			setErro(
 				error.response?.data?.detail ||
-					"Não foi possível carregar as investigações.",
+				"Não foi possível carregar as investigações.",
 			);
 		} finally {
 			setCarregando(false);
@@ -140,7 +97,6 @@ function Investigacao() {
 		setStatus("em_andamento");
 
 		setModo("nova");
-		setMenuAberto(false);
 		limparMensagens();
 	}
 
@@ -150,7 +106,6 @@ function Investigacao() {
 
 	async function selecionarInvestigacao(id) {
 		try {
-				setMenuAberto(false);
 			limparMensagens();
 
 			const investigacao = await investigacaoService.buscarPorId(id);
@@ -167,13 +122,12 @@ function Investigacao() {
 			console.error("Erro ao buscar investigação:", error);
 			setErro(
 				error.response?.data?.detail ||
-					"Não foi possível carregar a investigação.",
+				"Não foi possível carregar a investigação.",
 			);
 		}
 	}
 
 	function iniciarEdicao() {
-		setMenuAberto(false);
 		limparMensagens();
 		setModo("editar");
 	}
@@ -211,17 +165,17 @@ function Investigacao() {
 				setAfirmacoes([]);
 				setErro(
 					error.response?.data?.detail ||
-						"Nenhuma afirmação relevante foi identificada.",
+					"Nenhuma afirmação relevante foi identificada.",
 				);
 			} else if (error.response?.status === 503) {
 				setErro(
 					error.response?.data?.detail ||
-						"O serviço de IA está indisponível no momento.",
+					"O serviço de IA está indisponível no momento.",
 				);
 			} else {
 				setErro(
 					error.response?.data?.detail ||
-						"Não foi possível identificar as afirmações.",
+					"Não foi possível identificar as afirmações.",
 				);
 			}
 		} finally {
@@ -299,7 +253,7 @@ function Investigacao() {
 
 			setErro(
 				error.response?.data?.detail ||
-					"Não foi possível salvar a investigação.",
+				"Não foi possível salvar a investigação.",
 			);
 		} finally {
 			setSalvando(false);
@@ -340,100 +294,72 @@ function Investigacao() {
 			console.error("Erro ao excluir investigação:", error);
 			setErro(
 				error.response?.data?.detail ||
-					"Não foi possível excluir a investigação.",
+				"Não foi possível excluir a investigação.",
 			);
 		} finally {
 			setExcluindo(false);
 		}
 	}
 
-	async function handleLogout() {
-		try {
-			authService.logout();
-			navigate("/login");
-		} catch (error) {
-			console.error("Erro ao encerrar sessão:", error);
-		}
-	}
 
 	function selecionarAfirmacao(afirmacao) {
 		setAfirmacaoSelecionada(afirmacao.id);
+		navigate(ROTAS.afirmacao(investigacaoSelecionada.id, afirmacao.id));
 	}
 
 	return (
-		<main className="investigacao-page">
-			<header className="investigacao-topbar">
-				<div className="investigacao-brand">
-					<div className="investigacao-brand-icon">
-						<Icon size={17}>
-							<path d="M12 3 4 7l8 4 8-4-8-4Z" />
-							<path d="M6 10v4.5c0 1.38 2.69 2.5 6 2.5s6-1.12 6-2.5V10" />
-							<path d="M20 8v5" />
-						</Icon>
-					</div>
-					<strong>Investigação Crítica</strong>
-				</div>
-
-				<div className="investigacao-topbar-title" aria-live="polite">
-					<span>INVESTIGAÇÃO</span>
-					<strong>{tituloExibido}</strong>
-				</div>
-
-				<div className="investigacao-topbar-actions">
-					{ehEdicao && (
-						<button type="submit" form="investigacao-form" className="investigacao-primary-button" disabled={salvando || excluindo}>
-							{salvando ? "Salvando..." : "Salvar"}
-						</button>
-					)}
-
-					<button type="button" className="investigacao-menu-button" onClick={() => setMenuAberto((aberto) => !aberto)} aria-label="Abrir menu" aria-expanded={menuAberto}>
-						<Icon size={18}><path d="M5 7h14M5 12h14M5 17h14" /></Icon>
+		<InvestigacaoShell
+			titulo={tituloExibido}
+			investigacoes={investigacoes}
+			selecionadaId={investigacaoSelecionada?.id}
+			carregando={carregando}
+			onSelecionar={selecionarInvestigacao}
+			onNova={iniciarNovaInvestigacao}
+			menuItens={
+				ehNova
+					? []
+					: [
+						{ rotulo: "Alterar investigação", onClick: iniciarEdicao },
+						{
+							rotulo: excluindo ? "Excluindo..." : "Excluir investigação",
+							onClick: handleExcluir,
+							perigo: true,
+							desabilitado: excluindo,
+						},
+					]
+			}
+			acoesTopo={
+				ehEdicao ? (
+					<button
+						type="submit"
+						form="investigacao-form"
+						className="investigacao-primary-button"
+						disabled={salvando || excluindo}
+					>
+						{salvando ? "Salvando..." : "Salvar"}
+					</button>
+				) : null
+			}
+			rodape={
+				<>
+					<button
+						type="button"
+						className="investigacao-secondary-button"
+						onClick={iniciarNovaInvestigacao}
+					>
+						← Voltar às investigações
 					</button>
 
-					{menuAberto && (
-						<div className="investigacao-menu">
-							{!ehNova && (
-								<>
-									<button type="button" onClick={iniciarEdicao}>Alterar investigação</button>
-									<button type="button" className="investigacao-menu-danger" onClick={handleExcluir} disabled={excluindo}>
-										{excluindo ? "Excluindo..." : "Excluir investigação"}
-									</button>
-									<div className="investigacao-menu-divider" />
-								</>
-							)}
-							<button type="button" onClick={handleLogout}>Sair</button>
-						</div>
-					)}
-				</div>
-			</header>
-
-			<div className="investigacao-workspace">
-				<aside className="investigacao-sidebar">
-					<div className="sidebar-header">
-						<div>
-							<strong>Minhas investigações</strong>
-							<span>{investigacoes.length}{" "}{investigacoes.length === 1 ? "investigação" : "investigações"}</span>
-						</div>
-						<button type="button" className="new-investigation-button" onClick={iniciarNovaInvestigacao} aria-label="Nova investigação">+</button>
-					</div>
-
-					<div className="investigacao-list">
-						{carregando ? (
-							<p className="sidebar-message">Carregando...</p>
-						) : investigacoes.length === 0 ? (
-							<p className="sidebar-message">Nenhuma investigação criada.</p>
-						) : (
-							investigacoes.map((investigacao) => (
-								<button type="button" key={investigacao.id} className={`investigacao-list-item ${investigacaoSelecionada?.id === investigacao.id ? "investigacao-list-item-active" : ""}`} onClick={() => selecionarInvestigacao(investigacao.id)}>
-									<span className="investigacao-list-title">{investigacao.titulo}</span>
-									<span className="investigacao-list-status"><span className={`status-dot status-${investigacao.status}`} />{formatarStatus(investigacao.status)}</span>
-								</button>
-							))
-						)}
-					</div>
-				</aside>
-
-				<div className="investigacao-content-area">
+					<button
+						type="button"
+						className="investigacao-primary-button investigacao-conclusion-button"
+						disabled
+					>
+						Salvar Conclusão
+					</button>
+				</>
+			}
+		>
 			<section className="investigacao-main">
 				{erro && (
 					<div className="investigacao-alert investigacao-alert-error">
@@ -715,12 +641,11 @@ function Investigacao() {
 									return (
 										<article
 											key={afirmacao.id}
-											className={`investigacao-assertion-card ${
-												afirmacaoSelecionada ===
+											className={`investigacao-assertion-card ${afirmacaoSelecionada ===
 												afirmacao.id
-													? "investigacao-assertion-card-selected"
-													: ""
-											}`}
+												? "investigacao-assertion-card-selected"
+												: ""
+												}`}
 										>
 											<div className="investigacao-assertion-main">
 												<div className="investigacao-assertion-index">
@@ -734,6 +659,10 @@ function Investigacao() {
 													<h3>
 														{afirmacao.texto}
 													</h3>
+
+													<span className="investigacao-ai-badge">
+														Identificada por IA
+													</span>
 
 													<div className="investigacao-assertion-progress">
 														<span className="investigacao-assertion-status">
@@ -766,14 +695,10 @@ function Investigacao() {
 											<button
 												type="button"
 												className="investigacao-investigate-button"
-												onClick={() =>
-													selecionarAfirmacao(
-														afirmacao,
-													)
-												}
+												onClick={() => selecionarAfirmacao(afirmacao)}
 											>
 												{afirmacaoSelecionada ===
-												afirmacao.id
+													afirmacao.id
 													? "Selecionada"
 													: "Investigar"}
 												<Icon size={15}>
@@ -848,28 +773,8 @@ function Investigacao() {
 						</span>
 					</div>
 				)}
-					</section>
-				</div>
-			</div>
-
-			<footer className="investigacao-bottom-bar">
-				<button
-					type="button"
-					className="investigacao-secondary-button"
-					onClick={iniciarNovaInvestigacao}
-				>
-					← Voltar às investigações
-				</button>
-
-				<button
-					type="button"
-					className="investigacao-primary-button investigacao-conclusion-button"
-					disabled
-				>
-					Salvar Conclusão
-				</button>
-			</footer>
-		</main>
+			</section>
+		</InvestigacaoShell>
 	);
 }
 
