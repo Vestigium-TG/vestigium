@@ -106,7 +106,7 @@ def gerar_consultas(texto_afirmacao: str) -> list[str]:
     return _gerar_lista_json(prompt)
 
 
-def pesquisar_fontes(texto_afirmacao: str) -> list[dict]:
+def pesquisar_fontes(texto_afirmacao: str, consulta: str | None = None) -> list[dict]:
     cliente = _obter_cliente()
 
     prompt = (
@@ -116,6 +116,9 @@ def pesquisar_fontes(texto_afirmacao: str) -> list[dict]:
         "que cada fonte diz sobre a afirmação.\n\n"
         f"Afirmação:\n{texto_afirmacao}"
     )
+
+    if consulta:
+        prompt += f"\n\nUse como termo de busca:\n{consulta}"
 
     try:
         resposta = cliente.models.generate_content(
