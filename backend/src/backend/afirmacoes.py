@@ -196,6 +196,49 @@ def criar_perguntas(
     return perguntas_criadas
 
 
+@router_afirmacoes.get("/{afirmacao_id}/perguntas")
+def listar_perguntas(
+    afirmacao_id: uuid.UUID,
+    usuario_id: str = Depends(obter_usuario_id_atual),
+):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    try:
+        afirmacao = _obter_afirmacao_com_posse(cursor, afirmacao_id, usuario_id)
+    except HTTPException:
+        cursor.close()
+        conn.close()
+        raise
+
+    cursor.execute(
+        """
+        SELECT id, afirmacao_id, texto, resposta, tipo, data_criacao
+        FROM PERGUNTA
+        WHERE afirmacao_id = %s
+        ORDER BY data_criacao
+        """,
+        (afirmacao["id"],),
+    )
+
+    resultados = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    return [
+        {
+            "id": str(item[0]),
+            "afirmacao_id": str(item[1]),
+            "texto": item[2],
+            "resposta": item[3],
+            "tipo": item[4],
+            "data_criacao": item[5],
+        }
+        for item in resultados
+    ]
+
+
 @router_afirmacoes.post("/{afirmacao_id}/investigar")
 def investigar_afirmacao(
     afirmacao_id: uuid.UUID,
