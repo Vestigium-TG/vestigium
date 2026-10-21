@@ -91,3 +91,62 @@ def gerar_perguntas(texto_afirmacao: str) -> list[str]:
     )
 
     return _gerar_lista_json(prompt)
+
+
+def pesquisar_fontes(texto_afirmacao: str) -> list[dict]:
+    cliente = _obter_cliente()
+
+    prompt = (
+        "Você é um assistente de checagem de fatos. Pesquise na web fontes "
+        "confiáveis que ajudem a verificar a afirmação abaixo, tanto fontes "
+        "que a confirmem quanto fontes que a contestem. Resuma brevemente o "
+        "que cada fonte diz sobre a afirmação.\n\n"
+        f"Afirmação:\n{texto_afirmacao}"
+    )
+
+    try:
+        resposta = cliente.models.generate_content(
+            model=_MODELO,
+            contents=prompt,
+            config={"tools": [{"google_search": {}}]},
+        )
+    except Exception as erro:
+        raise GeminiIndisponivelError(str(erro)) from erro
+
+    candidatos = resposta.candidates or []
+    metadados = candidatos[0].grounding_metadata if candidatos else None
+
+    if metadados is None or not metadados.grounding_chunks:
+        return []
+
+    trechos_por_chunk: dict[int, list[str]] = {}
+
+    for suporte in metadados.grounding_supports or []:
+        texto = (suporte.segment.text or "").strip() if suporte.segment else ""
+
+        if not texto:
+            continue
+
+        for indice in suporte.grounding_chunk_indices or []:
+            trechos_por_chunk.setdefault(indice, []).append(texto)
+
+    resultados = []
+    urls_vistas = set()
+
+    for indice, chunk in enumerate(metadados.grounding_chunks):
+        web = chunk.web
+
+        if web is None or not web.uri or web.uri in urls_vistas:
+            continue
+
+        urls_vistas.add(web.uri)
+
+        resultados.append(
+            {
+                "titulo": web.title or web.domain or web.uri,
+                "url": web.uri,
+                "trecho": " ".join(trechos_por_chunk.get(indice, [])) or None,
+            }
+        )
+
+    return resultados
