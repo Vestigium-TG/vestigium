@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: vestigium
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 
   backend:
     image: docker.io/vinilmt/vestigium_backend:latest
@@ -30,3 +32,6 @@ services:
       - "8080:80"
     depends_on:
       - backend
+
+volumes:
+  pgdata:
