@@ -93,6 +93,19 @@ def gerar_perguntas(texto_afirmacao: str) -> list[str]:
     return _gerar_lista_json(prompt)
 
 
+def gerar_consultas(texto_afirmacao: str) -> list[str]:
+    prompt = (
+        "Você é um assistente de checagem de fatos. Para a afirmação abaixo, "
+        "sugira termos de busca (consultas para um mecanismo de pesquisa na "
+        "web) que ajudem a encontrar fontes para verificá-la. Retorne APENAS "
+        "um array JSON de strings, uma string por consulta, sem comentários "
+        "adicionais.\n\n"
+        f"Afirmação:\n{texto_afirmacao}"
+    )
+
+    return _gerar_lista_json(prompt)
+
+
 def pesquisar_fontes(texto_afirmacao: str) -> list[dict]:
     cliente = _obter_cliente()
 
