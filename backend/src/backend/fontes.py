@@ -7,7 +7,12 @@ from pydantic import BaseModel, Field
 from backend.afirmacoes import _obter_afirmacao_com_posse
 from backend.auth import obter_usuario_id_atual
 from backend.db import conectar_banco
-from backend.gemini_service import GeminiIndisponivelError, pesquisar_fontes
+from backend.gemini_service import (
+    GeminiIndisponivelError,
+    GeminiRespostaVaziaError,
+    gerar_consultas,
+    pesquisar_fontes,
+)
 
 router_investigacoes = APIRouter(prefix="/investigacoes", tags=["fontes"])
 router_afirmacoes = APIRouter(prefix="/afirmacoes", tags=["fontes"])
@@ -23,6 +28,34 @@ class FonteCreate(BaseModel):
 
 class FontesCreate(BaseModel):
     fontes: list[FonteCreate] = Field(min_length=1)
+
+
+@router_afirmacoes.post("/{afirmacao_id}/consultas")
+def gerar_consultas_afirmacao(
+    afirmacao_id: uuid.UUID,
+    usuario_id: str = Depends(obter_usuario_id_atual),
+):
+    conn = conectar_banco()
+    cursor = conn.cursor()
+
+    try:
+        afirmacao = _obter_afirmacao_com_posse(cursor, afirmacao_id, usuario_id)
+    finally:
+        cursor.close()
+        conn.close()
+
+    try:
+        consultas = gerar_consultas(afirmacao["texto"])
+    except GeminiRespostaVaziaError:
+        raise HTTPException(
+            status_code=422, detail="Nenhuma sugestão de consulta gerada"
+        )
+    except GeminiIndisponivelError:
+        raise HTTPException(
+            status_code=503, detail="Serviço de IA indisponível no momento"
+        )
+
+    return {"afirmacao_id": afirmacao["id"], "consultas": consultas}
 
 
 @router_afirmacoes.post("/{afirmacao_id}/fontes/pesquisar")
