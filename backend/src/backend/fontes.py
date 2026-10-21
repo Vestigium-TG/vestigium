@@ -30,6 +30,10 @@ class FontesCreate(BaseModel):
     fontes: list[FonteCreate] = Field(min_length=1)
 
 
+class PesquisaRequest(BaseModel):
+    consulta: str | None = None
+
+
 @router_afirmacoes.post("/{afirmacao_id}/consultas")
 def gerar_consultas_afirmacao(
     afirmacao_id: uuid.UUID,
@@ -58,9 +62,10 @@ def gerar_consultas_afirmacao(
     return {"afirmacao_id": afirmacao["id"], "consultas": consultas}
 
 
-@router_afirmacoes.post("/{afirmacao_id}/fontes/pesquisar")
+@router_afirmacoes.post("/{afirmacao_id}/pesquisar")
 def pesquisar_fontes_afirmacao(
     afirmacao_id: uuid.UUID,
+    dados: PesquisaRequest | None = None,
     usuario_id: str = Depends(obter_usuario_id_atual),
 ):
     conn = conectar_banco()
@@ -72,8 +77,10 @@ def pesquisar_fontes_afirmacao(
         cursor.close()
         conn.close()
 
+    consulta = dados.consulta.strip() if dados and dados.consulta else None
+
     try:
-        resultados = pesquisar_fontes(afirmacao["texto"])
+        resultados = pesquisar_fontes(afirmacao["texto"], consulta or None)
     except GeminiIndisponivelError:
         raise HTTPException(
             status_code=503,
