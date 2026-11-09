@@ -9,8 +9,8 @@
     devShells.x86_64-linux.default = pkgs.mkShell {
       packages = with pkgs; [
         # Python
-        basedpyright
         python3
+        python3Packages.python-lsp-server
         ruff
         uv
 
