@@ -7,11 +7,14 @@ from google.genai import errors as genai_errors
 MODEL_NAME = "gemini-2.5-flash"
 _client: genai.Client | None = None
 
+
 class GeminiUnavailableError(Exception):
     pass
 
+
 class GeminiEmptyResponseError(Exception):
     pass
+
 
 def _get_client() -> genai.Client:
     global _client
@@ -21,6 +24,7 @@ def _get_client() -> genai.Client:
             raise GeminiUnavailableError("GEMINI_API_KEY is not configured")
         _client = genai.Client(api_key=api_key)
     return _client
+
 
 def _generate_json_list(prompt: str) -> list[str]:
     client = _get_client()
@@ -56,6 +60,7 @@ def _generate_json_list(prompt: str) -> list[str]:
 
     return items
 
+
 def identify_claims(content: str) -> list[str]:
     prompt = (
         "You are a fact-checking assistant. Read the content below and "
@@ -64,6 +69,7 @@ def identify_claims(content: str) -> list[str]:
         f"Content:\n{content}"
     )
     return _generate_json_list(prompt)
+
 
 def generate_questions(claim_text: str) -> list[str]:
     prompt = (
@@ -74,6 +80,7 @@ def generate_questions(claim_text: str) -> list[str]:
     )
     return _generate_json_list(prompt)
 
+
 def generate_search_queries(claim_text: str) -> list[str]:
     prompt = (
         "You are a fact-checking assistant. For the claim below, "
@@ -82,6 +89,7 @@ def generate_search_queries(claim_text: str) -> list[str]:
         f"Claim:\n{claim_text}"
     )
     return _generate_json_list(prompt)
+
 
 def search_sources(claim_text: str, query: str | None = None) -> list[dict]:
     client = _get_client()

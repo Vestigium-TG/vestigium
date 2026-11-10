@@ -1,16 +1,15 @@
-from backend.controllers.auth_controller import router as auth_router
-from backend.controllers.claim_controller import (
-    router_claims,
-)
-from backend.controllers.claim_controller import (
-    router_investigations as claims_investigations_router,
-)
-from backend.controllers.evidence_controller import router as evidence_router
-from backend.controllers.investigation_controller import router as investigation_router
-from backend.controllers.reflection_controller import router as reflection_router
-from backend.controllers.source_controller import router as sources_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+
+from controllers.auth_controller import router as auth_router
+from controllers.claim_controller import router_claims
+from controllers.claim_controller import (
+    router_investigations as claims_investigations_router,
+)
+from controllers.evidence_controller import router as evidence_router
+from controllers.investigation_controller import router as investigation_router
+from controllers.reflection_controller import router as reflection_router
+from controllers.source_controller import router as sources_router
 
 app = FastAPI()
 

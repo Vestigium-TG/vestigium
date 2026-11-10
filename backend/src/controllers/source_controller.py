@@ -1,9 +1,10 @@
 import uuid
 
-from backend.database import connect_db
-from backend.models.source_model import SourcesCreate
-from backend.services.auth_service import get_current_user_id
 from fastapi import APIRouter, Depends, HTTPException
+
+from database import connect_db
+from models.source_model import SourcesCreate
+from services.auth_service import get_current_user_id
 
 router = APIRouter(prefix="/investigations", tags=["sources"])
 

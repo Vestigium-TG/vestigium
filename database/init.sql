@@ -1,4 +1,4 @@
-CREATE TABLE USER (
+CREATE TABLE users (
     id UUID PRIMARY KEY,
     email VARCHAR NOT NULL UNIQUE,
     password_hash VARCHAR NOT NULL,
@@ -6,7 +6,7 @@ CREATE TABLE USER (
 );
 
 
-CREATE TABLE INVESTIGATION (
+CREATE TABLE investigations (
     id UUID PRIMARY KEY,
     user_id UUID NOT NULL,
     title VARCHAR NOT NULL,
@@ -18,11 +18,11 @@ CREATE TABLE INVESTIGATION (
 
     CONSTRAINT fk_investigation_user
         FOREIGN KEY (user_id)
-        REFERENCES USER(id)
+        REFERENCES users(id)
 );
 
 
-CREATE TABLE SOURCE (
+CREATE TABLE sources (
     id UUID PRIMARY KEY,
     investigation_id UUID NOT NULL,
     url TEXT NOT NULL,
@@ -33,11 +33,11 @@ CREATE TABLE SOURCE (
 
     CONSTRAINT fk_source_investigation
         FOREIGN KEY (investigation_id)
-        REFERENCES INVESTIGATION(id)
+        REFERENCES investigations(id)
 );
 
 
-CREATE TABLE CLAIM (
+CREATE TABLE claims (
     id UUID PRIMARY KEY,
     investigation_id UUID NOT NULL,
     source_id UUID,
@@ -47,15 +47,15 @@ CREATE TABLE CLAIM (
 
     CONSTRAINT fk_claim_investigation
         FOREIGN KEY (investigation_id)
-        REFERENCES INVESTIGATION(id),
+        REFERENCES investigations(id),
 
     CONSTRAINT fk_claim_source
         FOREIGN KEY (source_id)
-        REFERENCES SOURCE(id)
+        REFERENCES sources(id)
 );
 
 
-CREATE TABLE QUESTION (
+CREATE TABLE questions (
     id UUID PRIMARY KEY,
     claim_id UUID NOT NULL,
     text TEXT NOT NULL,
@@ -65,11 +65,11 @@ CREATE TABLE QUESTION (
 
     CONSTRAINT fk_question_claim
         FOREIGN KEY (claim_id)
-        REFERENCES CLAIM(id)
+        REFERENCES claims(id)
 );
 
 
-CREATE TABLE EVIDENCE (
+CREATE TABLE evidences (
     id UUID PRIMARY KEY,
     claim_id UUID NOT NULL,
     source_id UUID NOT NULL,
@@ -80,15 +80,15 @@ CREATE TABLE EVIDENCE (
 
     CONSTRAINT fk_evidence_claim
         FOREIGN KEY (claim_id)
-        REFERENCES CLAIM(id),
+        REFERENCES claims(id),
 
     CONSTRAINT fk_evidence_source
         FOREIGN KEY (source_id)
-        REFERENCES SOURCE(id)
+        REFERENCES sources(id)
 );
 
 
-CREATE TABLE REFLECTION (
+CREATE TABLE reflections (
     id UUID PRIMARY KEY,
     claim_id UUID NOT NULL,
     text TEXT NOT NULL,
@@ -96,11 +96,11 @@ CREATE TABLE REFLECTION (
 
     CONSTRAINT fk_reflection_claim
         FOREIGN KEY (claim_id)
-        REFERENCES CLAIM(id)
+        REFERENCES claims(id)
 );
 
 
-CREATE TABLE CONCLUSION (
+CREATE TABLE conclusions (
     id UUID PRIMARY KEY,
     investigation_id UUID NOT NULL UNIQUE,
     text TEXT NOT NULL,
@@ -109,5 +109,5 @@ CREATE TABLE CONCLUSION (
 
     CONSTRAINT fk_conclusion_investigation
         FOREIGN KEY (investigation_id)
-        REFERENCES INVESTIGATION(id)
+        REFERENCES investigations(id)
 );

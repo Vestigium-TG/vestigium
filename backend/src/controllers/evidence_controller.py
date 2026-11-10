@@ -2,11 +2,12 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from backend.database import connect_db
-from backend.models.evidence_model import EvidenceCreate
-from backend.services.auth_service import get_current_user_id
-from backend.services.database_service import get_claim_with_ownership
 from fastapi import APIRouter, Depends, HTTPException
+
+from database import connect_db
+from models.evidence_model import EvidenceCreate
+from services.auth_service import get_current_user_id
+from services.database_service import get_claim_with_ownership
 
 router = APIRouter(prefix="/claims", tags=["evidence"])
 
@@ -35,7 +36,7 @@ def register_evidence(
         now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
         eid = uuid.uuid4()
         cursor.execute(
-            "INSERT INTO evidence (id, claim_id, source_id, description, excerpt, type, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            "INSERT INTO evidences (id, claim_id, source_id, description, excerpt, type, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s)",
             (
                 str(eid),
                 claim["id"],

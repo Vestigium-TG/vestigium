@@ -1,7 +1,7 @@
 .direnv
 .env
 
-backend/src/backend/__pycache__
+**/__pycache__
 
 frontend/nginx.conf
 

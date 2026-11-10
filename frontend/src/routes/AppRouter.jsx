@@ -1,62 +1,59 @@
-import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
-import Login from "../pages/login/login";
-import Register from "../pages/register/register";
-import Investigacao from "../pages/investigacao/investigacao";
-import Afirmacao from "../pages/afirmacao/afirmacao"; // <--- Adicionada a importação do Afirmacao
-import Perfil from "../pages/perfil/perfil";
+import { Navigate, Route, Routes } from "react-router-dom";
+import ClaimView from "../views/pages/claim/ClaimView";
+import InvestigationView from "../views/pages/investigation/InvestigationView";
+import LoginView from "../views/pages/login/LoginView";
+import ProfileView from "../views/pages/profile/ProfileView";
+import RegisterView from "../views/pages/register/RegisterView";
+import { ROUTES } from "./paths";
 
-function RotaProtegida({ children }) {
-  return localStorage.getItem("token") ? children : <Navigate to="/login" replace />;
+function ProtectedRoute({ children }) {
+	return localStorage.getItem("token") ? (
+		children
+	) : (
+		<Navigate to={ROUTES.login} replace />
+	);
 }
 
 function AppRouter() {
-  const navigate = useNavigate();
-
-  return (
-    <Routes>
-      <Route
-        path="/login"
-        element={<Login onSuccess={() => navigate("/investigacoes")} />}
-      />
-      <Route
-        path="/register"
-        element={<Register onSuccess={() => navigate("/investigacoes")} />}
-      />
-      <Route
-        path="/investigacoes"
-        element={
-          <RotaProtegida>
-            <Investigacao />
-          </RotaProtegida>
-        }
-      />
-      <Route
-        path="/investigacoes/:id"
-        element={
-          <RotaProtegida>
-            <Investigacao />
-          </RotaProtegida>
-        }
-      />
-      <Route
-        path="/investigacoes/:investigacaoId/afirmacoes/:afirmacaoId"
-        element={
-          <RotaProtegida>
-            <Afirmacao />
-          </RotaProtegida>
-        }
-      />
-      <Route
-        path="/perfil"
-        element={
-          <RotaProtegida>
-            <Perfil />
-          </RotaProtegida>
-        }
-      />
-      <Route path="*" element={<Navigate to="/login" replace />} />
-    </Routes>
-  );
+	return (
+		<Routes>
+			<Route path={ROUTES.login} element={<LoginView />} />
+			<Route path={ROUTES.register} element={<RegisterView />} />
+			<Route
+				path={ROUTES.newInvestigation}
+				element={
+					<ProtectedRoute>
+						<InvestigationView />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={ROUTES.investigationPattern}
+				element={
+					<ProtectedRoute>
+						<InvestigationView />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={ROUTES.claimPattern}
+				element={
+					<ProtectedRoute>
+						<ClaimView />
+					</ProtectedRoute>
+				}
+			/>
+			<Route
+				path={ROUTES.profile}
+				element={
+					<ProtectedRoute>
+						<ProfileView />
+					</ProtectedRoute>
+				}
+			/>
+			<Route path="*" element={<Navigate to={ROUTES.login} replace />} />
+		</Routes>
+	);
 }
 
 export default AppRouter;

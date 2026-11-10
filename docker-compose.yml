@@ -15,8 +15,7 @@ services:
     # image: docker.io/vinilmt/vestigium_backend:latest
     build: ./backend
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@bd:5432/vestigium
-      GEMINI_INDISPONIVEL: false
+      DATABASE_URL: postgresql://postgres:postgres@database:5432/vestigium
     env_file:
       - ./.env
     ports:

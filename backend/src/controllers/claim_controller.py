@@ -2,21 +2,22 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from backend.database import connect_db
-from backend.models.source_model import SearchRequest
-from backend.services.ai_service import (
+from fastapi import APIRouter, Depends, HTTPException
+
+from database import connect_db
+from models.source_model import SearchRequest
+from services.ai_service import (
     GeminiEmptyResponseError,
     GeminiUnavailableError,
     generate_search_queries,
     identify_claims,
     search_sources,
 )
-from backend.services.auth_service import get_current_user_id
-from backend.services.database_service import (
+from services.auth_service import get_current_user_id
+from services.database_service import (
     generate_and_persist_questions,
     get_claim_with_ownership,
 )
-from fastapi import APIRouter, Depends, HTTPException
 
 # Two routers: claim-level endpoints live under /claims, while the endpoint that
 # creates claims for an investigation lives under /investigations/{id}/claims.

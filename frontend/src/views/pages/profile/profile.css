@@ -1,0 +1,120 @@
+.profile-page {
+	min-height: 100svh;
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: clamp(24px, 5vw, 64px);
+	background: #f6f8fb;
+	color: #1f2937;
+}
+
+.profile-content {
+	width: min(100%, 720px);
+	box-sizing: border-box;
+	padding: clamp(32px, 6vw, 64px);
+	border: 1px solid #e2e8f0;
+	border-radius: 16px;
+	background: #ffffff;
+	box-shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+}
+
+.profile-kicker {
+	margin: 0 0 18px;
+	color: #2563eb;
+	font-size: 0.78rem;
+	font-weight: 800;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.profile-title-row {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
+
+.profile-content h1 {
+	margin: 0;
+	color: #172033;
+	font-family: Georgia, "Times New Roman", serif;
+	font-size: clamp(2.8rem, 6vw, 4.8rem);
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 0.98;
+}
+
+.profile-logo {
+	display: block;
+	width: clamp(56px, 9vw, 92px);
+	height: clamp(56px, 9vw, 92px);
+	margin-bottom: 18px;
+	object-fit: contain;
+}
+
+.profile-description,
+.profile-status {
+	margin: 20px 0 0;
+	color: #64748b;
+	font-size: 1rem;
+}
+
+.profile-error {
+	margin: 24px 0 0;
+	color: #dc2626;
+	font-size: 0.9rem;
+}
+
+.profile-data {
+	display: grid;
+	gap: 0;
+	margin: 36px 0 0;
+	border-top: 1px solid #e2e8f0;
+}
+
+.profile-data div {
+	display: grid;
+	grid-template-columns: minmax(130px, 0.35fr) minmax(0, 1fr);
+	gap: 24px;
+	padding: 18px 0;
+	border-bottom: 1px solid #e2e8f0;
+}
+
+.profile-data dt {
+	color: #334155;
+	font-size: 0.86rem;
+	font-weight: 700;
+}
+
+.profile-data dt i {
+	width: 16px;
+	margin-right: 8px;
+	color: #2563eb;
+	text-align: center;
+}
+
+.profile-data dd {
+	margin: 0;
+	color: #172033;
+	overflow-wrap: anywhere;
+}
+
+@media (max-width: 560px) {
+	.profile-page {
+		padding: 24px 16px;
+	}
+
+	.profile-content {
+		padding: 32px 24px;
+	}
+
+	.profile-title-row {
+		align-items: flex-start;
+		gap: 12px;
+	}
+
+	.profile-data div {
+		grid-template-columns: 1fr;
+		gap: 6px;
+	}
+}

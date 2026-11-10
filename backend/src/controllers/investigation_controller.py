@@ -2,10 +2,11 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from backend.database import connect_db
-from backend.models.investigation_model import InvestigationCreate, InvestigationUpdate
-from backend.services.auth_service import get_current_user_id
 from fastapi import APIRouter, Depends, HTTPException
+
+from database import connect_db
+from models.investigation_model import InvestigationCreate, InvestigationUpdate
+from services.auth_service import get_current_user_id
 
 router = APIRouter(prefix="/investigations", tags=["investigations"])
 
@@ -198,7 +199,7 @@ def delete_investigation(
         raise HTTPException(status_code=403, detail="Access denied")
 
     inv_id = str(investigation_id)
-    for table in ["evidence", "questions", "reflections"]:
+    for table in ["evidences", "questions", "reflections"]:
         cursor.execute(
             f"DELETE FROM {table} WHERE claim_id IN (SELECT id FROM claims WHERE investigation_id = %s)",
             (inv_id,),

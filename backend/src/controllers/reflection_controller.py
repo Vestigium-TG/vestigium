@@ -2,11 +2,12 @@ import uuid
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
-from backend.database import connect_db
-from backend.models.reflection_model import ReflectionCreate
-from backend.services.auth_service import get_current_user_id
-from backend.services.database_service import get_claim_with_ownership
 from fastapi import APIRouter, Depends, HTTPException
+
+from database import connect_db
+from models.reflection_model import ReflectionCreate
+from services.auth_service import get_current_user_id
+from services.database_service import get_claim_with_ownership
 
 router = APIRouter(prefix="/claims", tags=["reflections"])
 

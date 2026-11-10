@@ -5,10 +5,11 @@ from zoneinfo import ZoneInfo
 
 import bcrypt
 import psycopg2
-from backend.database import connect_db
-from backend.models.auth_model import LoginRequest, RegisterRequest
-from backend.services.auth_service import TOKENS, get_current_user_id
 from fastapi import APIRouter, Depends, Header, HTTPException
+
+from database import connect_db
+from models.auth_model import LoginRequest, RegisterRequest
+from services.auth_service import TOKENS, get_current_user_id
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 

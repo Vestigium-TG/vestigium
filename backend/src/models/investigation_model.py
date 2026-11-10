@@ -6,6 +6,7 @@ class InvestigationCreate(BaseModel):
     input_type: str
     original_content: str
 
+
 class InvestigationUpdate(BaseModel):
     title: str | None = None
     status: str | None = None

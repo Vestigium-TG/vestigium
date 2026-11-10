@@ -10,8 +10,10 @@ class SourceCreate(BaseModel):
     type: str | None = None
     accessed_at: datetime | None = None
 
+
 class SourcesCreate(BaseModel):
     sources: list[SourceCreate] = Field(min_length=1)
+
 
 class SearchRequest(BaseModel):
     query: str | None = None

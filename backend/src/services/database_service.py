@@ -4,7 +4,7 @@ from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
-from backend.services.ai_service import (
+from services.ai_service import (
     GeminiEmptyResponseError,
     GeminiUnavailableError,
     generate_questions,
