@@ -9,10 +9,10 @@ from models.evidence_model import EvidenceCreate
 from services.auth_service import get_current_user_id
 from services.database_service import get_claim_with_ownership
 
-router = APIRouter(prefix="/claims", tags=["evidence"])
+router = APIRouter(prefix="/claims", tags=["evidences"])
 
 
-@router.post("/{claim_id}/evidence")
+@router.post("/{claim_id}/evidences")
 def register_evidence(
     claim_id: uuid.UUID,
     data: EvidenceCreate,
