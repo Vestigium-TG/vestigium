@@ -10,6 +10,7 @@ from services.auth_service import get_current_user_id
 from services.database_service import get_claim_with_ownership
 
 router = APIRouter(prefix="/claims", tags=["reflections"])
+router_reflection = APIRouter(prefix="/reflection", tags=["reflections"])
 
 
 @router.get("/{claim_id}/reflection")
@@ -79,3 +80,26 @@ def register_reflection(
         "text": data.text,
         "created_at": now,
     }
+
+
+@router_reflection.delete("/{reflection_id}")
+def delete_reflection(
+    reflection_id: uuid.UUID, user_id: str = Depends(get_current_user_id)
+):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT claim_id FROM reflections WHERE id = %s", (str(reflection_id),)
+        )
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail="Reflection not found")
+        get_claim_with_ownership(cursor, result[0], user_id)
+
+        cursor.execute("DELETE FROM reflections WHERE id = %s", (str(reflection_id),))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    return {"message": "Reflection deleted successfully"}
