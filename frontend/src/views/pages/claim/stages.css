@@ -68,6 +68,24 @@
 	font-weight: 500;
 }
 
+.stage-review-citations {
+	margin: 10px 0 0;
+	padding-left: 18px;
+	color: #64748b;
+	font-size: 0.7rem;
+	line-height: 1.5;
+}
+
+.stage-review-citations a {
+	color: #2f5dff;
+	text-decoration: none;
+	overflow-wrap: anywhere;
+}
+
+.stage-review-citations a:hover {
+	text-decoration: underline;
+}
+
 /* Perguntas */
 .stage-questions {
 	margin: 0;

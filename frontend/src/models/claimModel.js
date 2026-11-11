@@ -54,8 +54,32 @@ async function deleteEvidence(evidenceId) {
 }
 
 // UC11: Register Reflection
+async function listReflections(claimId) {
+	const response = await api.get(`/claims/${claimId}/reflection`);
 
-// UC12: Register Conclusion
+	return response.data;
+}
+
+async function registerReflection(claimId, reflection) {
+	const response = await api.post(
+		`/claims/${claimId}/reflection`,
+		reflection,
+	);
+
+	return response.data;
+}
+
+async function deleteReflection(reflectionId) {
+	const response = await api.delete(`/reflection/${reflectionId}`);
+
+	return response.data;
+}
+
+async function reviewClaim(claimId) {
+	const response = await api.post(`/claims/${claimId}/review`);
+
+	return response.data;
+}
 
 export default {
 	listQuestions,
@@ -65,4 +89,8 @@ export default {
 	listEvidences,
 	registerEvidence,
 	deleteEvidence,
+	listReflections,
+	registerReflection,
+	deleteReflection,
+	reviewClaim,
 };

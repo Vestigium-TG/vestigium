@@ -3,10 +3,14 @@ import InvestigationShell from "../../components/InvestigationShell/Investigatio
 import StageSection from "../../components/StageSection/StageSection";
 import useClaimController from "../../../controllers/useClaimController";
 import useEvidencesController from "../../../controllers/useEvidencesController";
+import useClaimReviewController from "../../../controllers/useClaimReviewController";
 import useInvestigationsController from "../../../controllers/useInvestigationsController";
+import useReflectionsController from "../../../controllers/useReflectionsController";
 import useSourcesController from "../../../controllers/useSourcesController";
+import ClaimReviewSection from "./ClaimReviewSection";
 import EvidenceSection from "./EvidenceSection";
 import GuidingQuestions from "./GuidingQuestions";
+import ReflectionSection from "./ReflectionSection";
 import SelectedSources from "./SelectedSources";
 import SourceSearch from "./SourceSearch";
 import "./claim.css";
@@ -49,6 +53,15 @@ const STAGES = [
 		description:
 			"Escreva sua análise a partir das evidências reunidas.",
 	},
+	{
+		id: "review",
+		title: "Análise da IA",
+		badge: "Análise assistida",
+		ai: true,
+		useCase: "UC11",
+		description:
+			"Identifique lacunas, contradições e pontos complementares, sem veredito.",
+	},
 ];
 
 // UC07 — Investigate Claim
@@ -90,6 +103,21 @@ function ClaimView() {
 		remove: deleteEvidence,
 	} = useEvidencesController(claim?.id);
 	const evidenceCount = evidences.length;
+	const {
+		reflections,
+		loading: reflectionsLoading,
+		error: reflectionError,
+		saving: savingReflection,
+		deletingReflectionId,
+		register: registerReflection,
+		remove: deleteReflection,
+	} = useReflectionsController(claim?.id);
+	const {
+		review,
+		loading: reviewLoading,
+		error: reviewError,
+		analyze: analyzeClaim,
+	} = useClaimReviewController(claim?.id);
 
 	// UC08: GuidingQuestions uses claimModel questions endpoints.
 	// UC09: SourceSearch uses claimModel search endpoints; useSourcesController loads/registers sources.
@@ -133,6 +161,32 @@ function ClaimView() {
 						deletingEvidenceId={deletingEvidenceId}
 						onRegister={registerEvidence}
 						onDelete={deleteEvidence}
+					/>
+				);
+			case "reflection":
+				return (
+					<ReflectionSection
+						key={claim.id}
+						reflections={reflections}
+						loading={reflectionsLoading}
+						error={reflectionError}
+						saving={savingReflection}
+						deletingReflectionId={deletingReflectionId}
+						onRegister={registerReflection}
+						onDelete={deleteReflection}
+					/>
+				);
+			case "review":
+				return (
+					<ClaimReviewSection
+						key={claim.id}
+						claimId={claim.id}
+						evidences={evidences}
+						sources={sources}
+						review={review}
+						loading={reviewLoading}
+						error={reviewError}
+						onAnalyze={analyzeClaim}
 					/>
 				);
 			default:
