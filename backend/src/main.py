@@ -7,6 +7,7 @@ from controllers.claim_controller import (
     router_investigations as claims_investigations_router,
 )
 from controllers.evidence_controller import router as evidence_router
+from controllers.evidence_controller import router_evidences
 from controllers.investigation_controller import router as investigation_router
 from controllers.reflection_controller import router as reflection_router
 from controllers.source_controller import router as sources_router
@@ -26,6 +27,7 @@ app.include_router(claims_investigations_router)
 app.include_router(router_claims)
 app.include_router(sources_router)
 app.include_router(evidence_router)
+app.include_router(router_evidences)
 app.include_router(reflection_router)
 
 

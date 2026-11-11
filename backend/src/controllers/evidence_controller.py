@@ -10,6 +10,7 @@ from services.auth_service import get_current_user_id
 from services.database_service import get_claim_with_ownership
 
 router = APIRouter(prefix="/claims", tags=["evidences"])
+router_evidences = APIRouter(prefix="/evidences", tags=["evidences"])
 
 
 @router.get("/{claim_id}/evidences")
@@ -90,3 +91,26 @@ def register_evidence(
         "type": data.type,
         "created_at": now,
     }
+
+
+@router_evidences.delete("/{evidence_id}")
+def delete_evidence(
+    evidence_id: uuid.UUID, user_id: str = Depends(get_current_user_id)
+):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        cursor.execute(
+            "SELECT claim_id FROM evidences WHERE id = %s", (str(evidence_id),)
+        )
+        result = cursor.fetchone()
+        if not result:
+            raise HTTPException(status_code=404, detail="Evidence not found")
+        get_claim_with_ownership(cursor, result[0], user_id)
+
+        cursor.execute("DELETE FROM evidences WHERE id = %s", (str(evidence_id),))
+        conn.commit()
+    finally:
+        cursor.close()
+        conn.close()
+    return {"message": "Evidence deleted successfully"}
