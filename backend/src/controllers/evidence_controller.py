@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.evidence_model import EvidenceCreate
 from services.auth_service import get_current_user_id
 from services.database_service import get_claim_with_ownership
@@ -64,7 +62,7 @@ def register_evidence(
                 status_code=404, detail="Source not found in this investigation"
             )
 
-        now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+        now = current_timestamp()
         eid = uuid.uuid4()
         cursor.execute(
             "INSERT INTO evidences (id, claim_id, source_id, description, excerpt, type, created_at) VALUES (%s, %s, %s, %s, %s, %s, %s)",

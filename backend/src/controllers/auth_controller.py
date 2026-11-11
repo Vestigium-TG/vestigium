@@ -1,13 +1,11 @@
 import secrets
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 import bcrypt
 import psycopg2
 from fastapi import APIRouter, Depends, Header, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.auth_model import LoginRequest, RegisterRequest
 from services.auth_service import TOKENS, get_current_user_id
 
@@ -20,7 +18,7 @@ def register(data: RegisterRequest):
     conn = connect_db()
     cursor = conn.cursor()
 
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     user_id = uuid.uuid4()
 
     try:

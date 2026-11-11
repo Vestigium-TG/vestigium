@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.reflection_model import ReflectionCreate
 from services.ai_service import (
     GeminiEmptyResponseError,
@@ -66,7 +64,7 @@ def register_reflection(
         conn.close()
         raise
 
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     reflection_id = uuid.uuid4()
 
     cursor.execute(

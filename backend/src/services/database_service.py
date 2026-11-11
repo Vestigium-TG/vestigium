@@ -1,9 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
+from database import current_timestamp
 from services.ai_service import (
     GeminiEmptyResponseError,
     GeminiUnavailableError,
@@ -66,7 +65,7 @@ def generate_and_persist_questions(
     except GeminiUnavailableError:
         raise HTTPException(status_code=503, detail="AI service currently unavailable")
 
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     created_questions = []
 
     for text in question_texts:

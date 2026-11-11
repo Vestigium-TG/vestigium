@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.conclusion_model import ConclusionUpsert
 from services.auth_service import get_current_user_id
 from services.database_service import check_investigation_ownership
@@ -70,7 +68,7 @@ def upsert_conclusion(
                 detail="At least one reflection must be registered before concluding",
             )
 
-        now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+        now = current_timestamp()
         cursor.execute(
             """
             INSERT INTO conclusions (id, investigation_id, text, created_at, updated_at)
