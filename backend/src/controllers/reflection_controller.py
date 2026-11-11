@@ -12,6 +12,33 @@ from services.database_service import get_claim_with_ownership
 router = APIRouter(prefix="/claims", tags=["reflections"])
 
 
+@router.get("/{claim_id}/reflection")
+def list_reflections(
+    claim_id: uuid.UUID, user_id: str = Depends(get_current_user_id)
+):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        claim = get_claim_with_ownership(cursor, claim_id, user_id)
+        cursor.execute(
+            "SELECT id, claim_id, text, created_at FROM reflections WHERE claim_id = %s ORDER BY created_at",
+            (claim["id"],),
+        )
+        results = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+    return [
+        {
+            "id": str(i[0]),
+            "claim_id": str(i[1]),
+            "text": i[2],
+            "created_at": i[3],
+        }
+        for i in results
+    ]
+
+
 @router.post("/{claim_id}/reflection")
 def register_reflection(
     claim_id: uuid.UUID,
