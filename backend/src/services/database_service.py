@@ -1,14 +1,28 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException
 
+from database import current_timestamp
 from services.ai_service import (
     GeminiEmptyResponseError,
     GeminiUnavailableError,
     generate_questions,
 )
+
+
+def check_investigation_ownership(
+    cursor, investigation_id: uuid.UUID, user_id: str
+) -> None:
+    cursor.execute(
+        "SELECT user_id FROM investigations WHERE id = %s", (str(investigation_id),)
+    )
+    result = cursor.fetchone()
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Investigation not found")
+
+    if str(result[0]) != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
 
 
 def get_claim_with_ownership(cursor, claim_id: uuid.UUID, user_id: str) -> dict:
@@ -51,7 +65,7 @@ def generate_and_persist_questions(
     except GeminiUnavailableError:
         raise HTTPException(status_code=503, detail="AI service currently unavailable")
 
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     created_questions = []
 
     for text in question_texts:

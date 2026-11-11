@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.source_model import SearchRequest
 from services.ai_service import (
     GeminiEmptyResponseError,
@@ -57,7 +55,7 @@ def create_claims(
             detail=str(e),
         )
 
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     created = []
     for text in claim_texts:
         cid = uuid.uuid4()

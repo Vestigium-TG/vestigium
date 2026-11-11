@@ -1,10 +1,8 @@
 import uuid
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, HTTPException
 
-from database import connect_db
+from database import connect_db, current_timestamp
 from models.investigation_model import InvestigationCreate, InvestigationUpdate
 from services.auth_service import get_current_user_id
 
@@ -33,7 +31,7 @@ def create_investigation(
 
     conn = connect_db()
     cursor = conn.cursor()
-    now = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    now = current_timestamp()
     investigation_id = uuid.uuid4()
 
     cursor.execute(
@@ -167,7 +165,7 @@ def update_investigation(
     fields = {
         k: v for k, v in data.model_dump(exclude_unset=True).items() if v is not None
     }
-    fields["updated_at"] = datetime.now(tz=ZoneInfo("America/Sao_Paulo"))
+    fields["updated_at"] = current_timestamp()
     set_clause = ", ".join(f"{k} = %s" for k in fields)
     cursor.execute(
         f"UPDATE investigations SET {set_clause} WHERE id = %s",

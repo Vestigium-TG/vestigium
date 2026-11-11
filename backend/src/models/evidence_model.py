@@ -5,6 +5,6 @@ from pydantic import BaseModel
 
 class EvidenceCreate(BaseModel):
     source_id: uuid.UUID
-    description: str
+    description: str = ""
     excerpt: str | None = None
     type: str | None = None
