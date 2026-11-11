@@ -12,6 +12,34 @@ from services.database_service import get_claim_with_ownership
 router = APIRouter(prefix="/claims", tags=["evidences"])
 
 
+@router.get("/{claim_id}/evidences")
+def list_evidences(claim_id: uuid.UUID, user_id: str = Depends(get_current_user_id)):
+    conn = connect_db()
+    cursor = conn.cursor()
+    try:
+        claim = get_claim_with_ownership(cursor, claim_id, user_id)
+        cursor.execute(
+            "SELECT id, claim_id, source_id, description, excerpt, type, created_at FROM evidences WHERE claim_id = %s ORDER BY created_at",
+            (claim["id"],),
+        )
+        results = cursor.fetchall()
+    finally:
+        cursor.close()
+        conn.close()
+    return [
+        {
+            "id": str(i[0]),
+            "claim_id": str(i[1]),
+            "source_id": str(i[2]),
+            "description": i[3],
+            "excerpt": i[4],
+            "type": i[5],
+            "created_at": i[6],
+        }
+        for i in results
+    ]
+
+
 @router.post("/{claim_id}/evidences")
 def register_evidence(
     claim_id: uuid.UUID,
