@@ -12,7 +12,7 @@ from services.database_service import get_claim_with_ownership
 router = APIRouter(prefix="/claims", tags=["reflections"])
 
 
-@router.post("/{claim_id}/reflections")
+@router.post("/{claim_id}/reflection")
 def register_reflection(
     claim_id: uuid.UUID,
     data: ReflectionCreate,
