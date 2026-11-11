@@ -26,7 +26,7 @@ def _get_client() -> genai.Client:
     return _client
 
 
-def _generate_json_list(prompt: str) -> list[str]:
+def _generate_json(prompt: str, schema: dict):
     client = _get_client()
     try:
         response = client.models.generate_content(
@@ -34,10 +34,7 @@ def _generate_json_list(prompt: str) -> list[str]:
             contents=prompt,
             config={
                 "response_mime_type": "application/json",
-                "response_schema": {
-                    "type": "ARRAY",
-                    "items": {"type": "STRING"},
-                },
+                "response_schema": schema,
             },
         )
     except (genai_errors.ServerError, genai_errors.APIError) as error:
@@ -50,9 +47,15 @@ def _generate_json_list(prompt: str) -> list[str]:
         raise GeminiEmptyResponseError("Gemini returned an empty response")
 
     try:
-        items = json.loads(text)
+        return json.loads(text)
     except json.JSONDecodeError as error:
         raise GeminiEmptyResponseError("Gemini returned invalid JSON format") from error
+
+
+def _generate_json_list(prompt: str) -> list[str]:
+    items = _generate_json(prompt, {"type": "ARRAY", "items": {"type": "STRING"}})
+    if not isinstance(items, list):
+        raise GeminiEmptyResponseError("Gemini returned invalid JSON format")
 
     items = [item.strip() for item in items if isinstance(item, str) and item.strip()]
     if not items:
