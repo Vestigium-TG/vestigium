@@ -21,8 +21,10 @@ function EvidenceSection({
 	async function handleSubmit(event) {
 		event.preventDefault();
 
-		if (!selectedSourceId || !excerpt.trim() || !description.trim()) {
-			setFormError("Selecione uma fonte e preencha o trecho e a descrição.");
+		if (!selectedSourceId || (!excerpt.trim() && !description.trim())) {
+			setFormError(
+				"Selecione uma fonte e preencha o trecho ou a descrição.",
+			);
 			return;
 		}
 
@@ -87,8 +89,7 @@ function EvidenceSection({
 						disabled={
 							saving ||
 							!selectedSourceId ||
-							!excerpt.trim() ||
-							!description.trim()
+							(!excerpt.trim() && !description.trim())
 						}
 					>
 						{saving ? "Adicionando..." : "+ Adicionar"}
