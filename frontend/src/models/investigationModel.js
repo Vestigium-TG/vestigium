@@ -36,6 +36,20 @@ async function identifyClaims(id) {
 	return response.data;
 }
 
+async function getConclusion(id) {
+	const response = await api.get(`/investigations/${id}/conclusion`);
+
+	return response.data;
+}
+
+async function saveConclusion(id, text) {
+	const response = await api.put(`/investigations/${id}/conclusion`, {
+		text,
+	});
+
+	return response.data;
+}
+
 export default {
 	list,
 	getById,
@@ -43,4 +57,6 @@ export default {
 	update,
 	remove,
 	identifyClaims,
+	getConclusion,
+	saveConclusion,
 };

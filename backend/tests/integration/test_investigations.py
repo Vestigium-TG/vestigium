@@ -20,6 +20,38 @@ def test_create_and_get_investigation(client, auth):
     assert body["claims"] == []
 
 
+def test_get_investigation_includes_per_claim_progress(
+    client, auth, investigation, claim, source
+):
+    claims = client.get(
+        f"/investigations/{investigation}", headers=auth
+    ).json()["claims"]
+    first_claim, second_claim = claims
+
+    evidence_response = client.post(
+        f"/claims/{first_claim['id']}/evidences",
+        json={"source_id": source["id"], "excerpt": "Trecho"},
+        headers=auth,
+    )
+    assert evidence_response.status_code == 200
+    reflection_response = client.post(
+        f"/claims/{second_claim['id']}/reflection",
+        json={"text": "Reflexão"},
+        headers=auth,
+    )
+    assert reflection_response.status_code == 200
+
+    updated_claims = client.get(
+        f"/investigations/{investigation}", headers=auth
+    ).json()["claims"]
+    by_id = {item["id"]: item for item in updated_claims}
+
+    assert by_id[first_claim["id"]]["evidence_count"] == 1
+    assert by_id[first_claim["id"]]["has_reflection"] is False
+    assert by_id[second_claim["id"]]["evidence_count"] == 0
+    assert by_id[second_claim["id"]]["has_reflection"] is True
+
+
 def test_create_with_url_input_type(client, auth):
     body = dict(VALID, input_type="url", original_content="https://x.example")
     assert client.post("/investigations", json=body, headers=auth).status_code == 200

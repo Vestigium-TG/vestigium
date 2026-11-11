@@ -9,6 +9,7 @@ function ReflectionSection({
 	deletingReflectionId,
 	onRegister,
 	onDelete,
+	showDelete = true,
 }) {
 	const [text, setText] = useState("");
 	const [formError, setFormError] = useState("");
@@ -44,18 +45,22 @@ function ReflectionSection({
 						>
 							<div className="stage-result-top">
 								<strong>Sua reflexão</strong>
-								<button
-									type="button"
-									className="stage-button"
-									onClick={() => onDelete(reflection.id)}
-									disabled={
-										deletingReflectionId === reflection.id
-									}
-								>
-									{deletingReflectionId === reflection.id
-										? "Removendo..."
-										: "Remover"}
-								</button>
+								{showDelete && (
+									<button
+										type="button"
+										className="stage-button"
+										onClick={() => onDelete(reflection.id)}
+										disabled={
+											deletingReflectionId ===
+											reflection.id
+										}
+									>
+										{deletingReflectionId ===
+										reflection.id
+											? "Removendo..."
+											: "Remover"}
+									</button>
+								)}
 							</div>
 							<p className="stage-excerpt">{reflection.text}</p>
 						</article>

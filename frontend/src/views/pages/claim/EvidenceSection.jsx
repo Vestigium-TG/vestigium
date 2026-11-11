@@ -12,6 +12,7 @@ function EvidenceSection({
 	deletingEvidenceId,
 	onRegister,
 	onDelete,
+	showForm = true,
 }) {
 	const [selectedSourceId, setSelectedSourceId] = useState("");
 	const [excerpt, setExcerpt] = useState("");
@@ -44,63 +45,74 @@ function EvidenceSection({
 
 	return (
 		<div className="stage-block">
-			<form className="stage-card stage-manual" onSubmit={handleSubmit}>
-				<strong>Adicionar evidência</strong>
-				<div className="stage-manual-fields">
-					<select
-						className="stage-input"
-						value={selectedSourceId}
-						onChange={(event) =>
-							setSelectedSourceId(event.target.value)
-						}
-						disabled={
-							saving || sourcesLoading || sources.length === 0
-						}
-						aria-label="Fonte da evidência"
-					>
-						<option value="">Escolha a fonte</option>
-						{sources.map((source) => (
-							<option key={source.id} value={source.id}>
-								{source.title || source.url}
-							</option>
-						))}
-					</select>
-					<textarea
-						className="stage-input"
-						value={excerpt}
-						onChange={(event) => setExcerpt(event.target.value)}
-						placeholder="Trecho da fonte"
-						aria-label="Trecho da fonte"
-						rows={3}
-						disabled={saving}
-					/>
-					<textarea
-						className="stage-input"
-						value={description}
-						onChange={(event) => setDescription(event.target.value)}
-						placeholder="Descrição da evidência"
-						aria-label="Descrição da evidência"
-						rows={3}
-						disabled={saving}
-					/>
-					<button
-						type="submit"
-						className="stage-button stage-button-primary"
-						disabled={
-							saving ||
-							!selectedSourceId ||
-							(!excerpt.trim() && !description.trim())
-						}
-					>
-						{saving ? "Adicionando..." : "+ Adicionar"}
-					</button>
-				</div>
-				{sources.length === 0 && !sourcesLoading && (
-					<p className="stage-hint">
-						Selecione uma fonte antes de registrar uma evidência.
-					</p>
-				)}
-			</form>
+			{showForm && (
+				<form
+					className="stage-card stage-manual"
+					onSubmit={handleSubmit}
+				>
+					<strong>Adicionar evidência</strong>
+					<div className="stage-manual-fields">
+						<select
+							className="stage-input"
+							value={selectedSourceId}
+							onChange={(event) =>
+								setSelectedSourceId(event.target.value)
+							}
+							disabled={
+								saving ||
+								sourcesLoading ||
+								sources.length === 0
+							}
+							aria-label="Fonte da evidência"
+						>
+							<option value="">Escolha a fonte</option>
+							{sources.map((source) => (
+								<option key={source.id} value={source.id}>
+									{source.title || source.url}
+								</option>
+							))}
+						</select>
+						<textarea
+							className="stage-input"
+							value={excerpt}
+							onChange={(event) =>
+								setExcerpt(event.target.value)
+							}
+							placeholder="Trecho da fonte"
+							aria-label="Trecho da fonte"
+							rows={3}
+							disabled={saving}
+						/>
+						<textarea
+							className="stage-input"
+							value={description}
+							onChange={(event) =>
+								setDescription(event.target.value)
+							}
+							placeholder="Descrição da evidência"
+							aria-label="Descrição da evidência"
+							rows={3}
+							disabled={saving}
+						/>
+						<button
+							type="submit"
+							className="stage-button stage-button-primary"
+							disabled={
+								saving ||
+								!selectedSourceId ||
+								(!excerpt.trim() && !description.trim())
+							}
+						>
+							{saving ? "Adicionando..." : "+ Adicionar"}
+						</button>
+					</div>
+					{sources.length === 0 && !sourcesLoading && (
+						<p className="stage-hint">
+							Selecione uma fonte antes de registrar uma evidência.
+						</p>
+					)}
+				</form>
+			)}
 
 			{sourcesError && (
 				<div className="stage-error">{sourcesError}</div>

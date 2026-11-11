@@ -660,6 +660,16 @@
 	background: #f3f4f6;
 }
 
+.investigation-claim-status-in-progress {
+	background: #fef3c7;
+	color: #92400e;
+}
+
+.investigation-claim-status-completed {
+	background: #dcfce7;
+	color: #166534;
+}
+
 .investigation-progress-track {
 	width: 96px;
 	height: 5px;
@@ -776,6 +786,8 @@
 
 .investigation-conclusion-card {
 	padding: 22px;
+	display: grid;
+	gap: 12px;
 	border: 1px solid #e2e8f0;
 	border-radius: 11px;
 	background: #ffffff;
@@ -814,8 +826,33 @@
 	font-size: 0.72rem;
 }
 
+.investigation-conclusion-input {
+	width: 100%;
+	min-height: 112px;
+	box-sizing: border-box;
+	padding: 12px 14px;
+	border: 1px solid #e5e7eb;
+	border-radius: 9px;
+	background: #ffffff;
+	color: #172033;
+	font: inherit;
+	font-size: 0.78rem;
+	line-height: 1.55;
+	resize: vertical;
+}
+
+.investigation-conclusion-input:focus {
+	border-color: #2f5dff;
+	outline: 3px solid rgb(47 93 255 / 12%);
+}
+
+.investigation-conclusion-input:disabled {
+	background: #f8fafc;
+	cursor: not-allowed;
+}
+
 .investigation-conclusion-card p {
-	margin: 15px 0 0;
+	margin: 0;
 	color: #9ca3af;
 	font-size: 0.68rem;
 }
@@ -840,7 +877,7 @@
 }
 
 .investigation-conclusion-button {
-	opacity: 0.65;
+	opacity: 1;
 }
 
 @media (max-width: 900px) {

@@ -82,6 +82,10 @@ function ClaimView() {
 		goToInvestigation,
 		goToNewInvestigation,
 	} = useClaimController();
+	const isInvestigationConcluded = [
+		"concluida",
+		"completed",
+	].includes(investigation?.status?.toLowerCase());
 
 	const { investigations, loading: investigationsLoading } =
 		useInvestigationsController();
@@ -131,7 +135,12 @@ function ClaimView() {
 			case "questions":
 				return <GuidingQuestions key={claim.id} claimId={claim.id} />;
 			case "search":
-				return (
+				return isInvestigationConcluded ? (
+					<div className="stage-empty">
+						A investigação foi concluída. A pesquisa de fontes está
+						disponível apenas para consulta nas etapas seguintes.
+					</div>
+				) : (
 					<SourceSearch
 						key={claim.id}
 						claimId={claim.id}
@@ -161,6 +170,7 @@ function ClaimView() {
 						deletingEvidenceId={deletingEvidenceId}
 						onRegister={registerEvidence}
 						onDelete={deleteEvidence}
+						showForm={!isInvestigationConcluded}
 					/>
 				);
 			case "reflection":
@@ -174,6 +184,7 @@ function ClaimView() {
 						deletingReflectionId={deletingReflectionId}
 						onRegister={registerReflection}
 						onDelete={deleteReflection}
+						showDelete={!isInvestigationConcluded}
 					/>
 				);
 			case "review":

@@ -1,5 +1,6 @@
 import Icon from "../../components/Icon";
 import InvestigationShell from "../../components/InvestigationShell/InvestigationShell";
+import useConclusionController from "../../../controllers/useConclusionController";
 import useInvestigationController from "../../../controllers/useInvestigationController";
 import {
 	formatDate,
@@ -11,7 +12,10 @@ import "./investigation.css";
 
 function claimProgress(claim) {
 	const count = claim?.evidence_count ?? claim?.evidence?.length ?? 0;
-	return Math.min(100, count > 0 ? 100 : 0);
+	if (claim?.has_reflection) {
+		return 100;
+	}
+	return count > 0 ? 50 : 0;
 }
 
 function InvestigationView() {
@@ -45,7 +49,29 @@ function InvestigationView() {
 		handleSubmit,
 		handleDelete,
 		selectClaim,
+		markInvestigationConcluded,
 	} = useInvestigationController();
+	const {
+		conclusion,
+		text: conclusionText,
+		setText: setConclusionText,
+		loading: conclusionLoading,
+		saving: conclusionSaving,
+		error: conclusionError,
+		success: conclusionSuccess,
+		save: saveConclusion,
+	} = useConclusionController(selectedInvestigation?.id);
+	const hasCompletedClaim = claims.some((claim) =>
+		claimProgress(claim) === 100,
+	);
+
+	async function handleConclusionSubmit(event) {
+		event.preventDefault();
+		const saved = await saveConclusion(hasCompletedClaim);
+		if (saved) {
+			markInvestigationConcluded();
+		}
+	}
 
 	return (
 		<InvestigationShell
@@ -96,11 +122,22 @@ function InvestigationView() {
 					</button>
 
 					<button
-						type="button"
+						type="submit"
+						form="investigation-conclusion-form"
 						className="investigation-primary-button investigation-conclusion-button"
-						disabled
+						disabled={
+							!selectedInvestigation ||
+							!hasCompletedClaim ||
+							conclusionLoading ||
+							conclusionSaving ||
+							!conclusionText.trim()
+						}
 					>
-						Salvar Conclusão
+						{conclusionSaving
+							? "Salvando..."
+							: conclusion
+								? "Atualizar conclusão"
+								: "Salvar conclusão"}
 					</button>
 				</>
 			}
@@ -394,6 +431,16 @@ function InvestigationView() {
 										claim.evidence?.length ??
 										0;
 									const progress = claimProgress(claim);
+									const claimStatus = claim.has_reflection
+										? "Concluída"
+										: evidences > 0
+											? "Em andamento"
+											: "Não iniciada";
+									const claimStatusClass = claim.has_reflection
+										? "investigation-claim-status-completed"
+										: evidences > 0
+											? "investigation-claim-status-in-progress"
+											: "";
 
 									return (
 										<article
@@ -420,10 +467,10 @@ function InvestigationView() {
 													</span>
 
 													<div className="investigation-claim-progress">
-														<span className="investigation-claim-status">
-															{evidences > 0
-																? "Em investigação"
-																: "Não iniciada"}
+														<span
+															className={`investigation-claim-status ${claimStatusClass}`}
+														>
+															{claimStatus}
 														</span>
 
 														<div className="investigation-progress-track">
@@ -487,36 +534,51 @@ function InvestigationView() {
 						</span>
 					</div>
 
-					<div className="investigation-conclusion-card">
+					<form
+						id="investigation-conclusion-form"
+						className="investigation-conclusion-card"
+						onSubmit={handleConclusionSubmit}
+					>
 						<div className="investigation-conclusion-header">
-							<strong>Sua conclusão geral</strong>
+							<strong>Conclusão geral</strong>
 							<span>Obrigatório</span>
 						</div>
 
-						<div className="investigation-conclusion-placeholder">
-							<div className="investigation-lock-icon">
-								<Icon size={18}>
-									<rect
-										x="5"
-										y="10"
-										width="14"
-										height="10"
-										rx="2"
-									/>
-									<path d="M8 10V7a4 4 0 0 1 8 0v3" />
-								</Icon>
+						{conclusionLoading ? (
+							<div className="investigation-conclusion-placeholder">
+								Carregando conclusão...
 							</div>
-
-							<span>
-								Investigue ao menos uma afirmação para concluir
-							</span>
-						</div>
+						) : (
+							<textarea
+								className="investigation-conclusion-input"
+								value={conclusionText}
+								onChange={(event) =>
+									setConclusionText(event.target.value)
+								}
+								placeholder="Registre a conclusão geral da investigação com base nas afirmações concluídas..."
+								aria-label="Texto da conclusão"
+								rows={5}
+								disabled={!selectedInvestigation || conclusionSaving}
+							/>
+						)}
 
 						<p>
-							Baseie-se nas afirmações investigadas e evidências
-							reunidas.
+							{hasCompletedClaim
+								? "Você pode salvar ou atualizar sua conclusão usando o botão abaixo."
+								: "Conclua ao menos uma afirmação (com reflexão) para habilitar o salvamento."}
 						</p>
-					</div>
+						{(conclusionError || conclusionSuccess) && (
+							<div
+								className={`investigation-alert ${
+									conclusionError
+										? "investigation-alert-error"
+										: "investigation-alert-success"
+								}`}
+							>
+								{conclusionError || conclusionSuccess}
+							</div>
+						)}
+					</form>
 				</section>
 
 				{!loading && (

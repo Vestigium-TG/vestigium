@@ -348,6 +348,24 @@ export default function useInvestigationController() {
 		[navigate, selectedInvestigation],
 	);
 
+	const markInvestigationConcluded = useCallback(() => {
+		if (!selectedInvestigation) {
+			return;
+		}
+
+		setStatus("concluida");
+		setSelectedInvestigation((current) =>
+			current ? { ...current, status: "concluida" } : current,
+		);
+		setInvestigations((current) =>
+			current.map((item) =>
+				String(item.id) === String(selectedInvestigation.id)
+					? { ...item, status: "concluida" }
+					: item,
+			),
+		);
+	}, [selectedInvestigation]);
+
 	return {
 		investigations,
 		selectedInvestigation,
@@ -380,5 +398,6 @@ export default function useInvestigationController() {
 		handleSubmit,
 		handleDelete,
 		selectClaim,
+		markInvestigationConcluded,
 	};
 }

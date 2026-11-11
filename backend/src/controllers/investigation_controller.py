@@ -99,7 +99,31 @@ def get_investigation(
     result = cursor.fetchone()
 
     cursor.execute(
-        "SELECT id, investigation_id, source_id, text, relevance, created_at FROM claims WHERE investigation_id = %s ORDER BY created_at",
+        """
+        SELECT
+            c.id,
+            c.investigation_id,
+            c.source_id,
+            c.text,
+            c.relevance,
+            c.created_at,
+            (
+                SELECT COUNT(*)
+                FROM evidences e
+                JOIN sources s
+                    ON s.id = e.source_id
+                    AND s.investigation_id = c.investigation_id
+                WHERE e.claim_id = c.id
+            ) AS evidence_count,
+            EXISTS (
+                SELECT 1
+                FROM reflections r
+                WHERE r.claim_id = c.id
+            ) AS has_reflection
+        FROM claims c
+        WHERE c.investigation_id = %s
+        ORDER BY c.created_at
+        """,
         (str(investigation_id),),
     )
     claims = [
@@ -110,6 +134,8 @@ def get_investigation(
             "text": i[3],
             "relevance": i[4],
             "created_at": i[5],
+            "evidence_count": i[6],
+            "has_reflection": i[7],
         }
         for i in cursor.fetchall()
     ]
