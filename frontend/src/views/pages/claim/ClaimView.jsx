@@ -2,8 +2,10 @@ import { SparkIcon } from "../../components/Icon";
 import InvestigationShell from "../../components/InvestigationShell/InvestigationShell";
 import StageSection from "../../components/StageSection/StageSection";
 import useClaimController from "../../../controllers/useClaimController";
+import useEvidencesController from "../../../controllers/useEvidencesController";
 import useInvestigationsController from "../../../controllers/useInvestigationsController";
 import useSourcesController from "../../../controllers/useSourcesController";
+import EvidenceSection from "./EvidenceSection";
 import GuidingQuestions from "./GuidingQuestions";
 import SelectedSources from "./SelectedSources";
 import SourceSearch from "./SourceSearch";
@@ -60,7 +62,6 @@ function ClaimView() {
 		index,
 		previous,
 		next,
-		evidenceCount,
 		loading,
 		error,
 		goToClaim,
@@ -78,6 +79,17 @@ function ClaimView() {
 		error: sourcesError,
 		register: registerSource,
 	} = useSourcesController(investigationId);
+
+	const {
+		evidences,
+		loading: evidencesLoading,
+		error: evidenceError,
+		saving: savingEvidence,
+		deletingEvidenceId,
+		register: registerEvidence,
+		remove: deleteEvidence,
+	} = useEvidencesController(claim?.id);
+	const evidenceCount = evidences.length;
 
 	// UC08: GuidingQuestions uses claimModel questions endpoints.
 	// UC09: SourceSearch uses claimModel search endpoints; useSourcesController loads/registers sources.
@@ -105,6 +117,22 @@ function ClaimView() {
 						sources={sources}
 						loading={sourcesLoading}
 						error={sourcesError}
+					/>
+				);
+			case "evidences":
+				return (
+					<EvidenceSection
+						key={claim.id}
+						sources={sources}
+						sourcesLoading={sourcesLoading}
+						sourcesError={sourcesError}
+						evidences={evidences}
+						loading={evidencesLoading}
+						error={evidenceError}
+						saving={savingEvidence}
+						deletingEvidenceId={deletingEvidenceId}
+						onRegister={registerEvidence}
+						onDelete={deleteEvidence}
 					/>
 				);
 			default:

@@ -31,9 +31,38 @@ async function searchSources(claimId, query) {
 	return response.data.results ?? [];
 }
 
+// UC10: Register Evidence
+async function listEvidences(claimId) {
+	const response = await api.get(`/claims/${claimId}/evidences`);
+
+	return response.data;
+}
+
+async function registerEvidence(claimId, evidence) {
+	const response = await api.post(
+		`/claims/${claimId}/evidences`,
+		evidence,
+	);
+
+	return response.data;
+}
+
+async function deleteEvidence(evidenceId) {
+	const response = await api.delete(`/evidences/${evidenceId}`);
+
+	return response.data;
+}
+
+// UC11: Register Reflection
+
+// UC12: Register Conclusion
+
 export default {
 	listQuestions,
 	generateQuestions,
 	generateSearchQueries,
 	searchSources,
+	listEvidences,
+	registerEvidence,
+	deleteEvidence,
 };
