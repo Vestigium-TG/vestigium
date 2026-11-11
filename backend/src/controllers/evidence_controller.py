@@ -46,8 +46,10 @@ def register_evidence(
     data: EvidenceCreate,
     user_id: str = Depends(get_current_user_id),
 ):
-    if not data.description.strip():
-        raise HTTPException(status_code=422, detail="description cannot be empty")
+    if not data.description.strip() and not (data.excerpt or "").strip():
+        raise HTTPException(
+            status_code=422, detail="excerpt and description cannot both be empty"
+        )
     conn = connect_db()
     cursor = conn.cursor()
     try:
