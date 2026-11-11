@@ -11,6 +11,21 @@ from services.ai_service import (
 )
 
 
+def check_investigation_ownership(
+    cursor, investigation_id: uuid.UUID, user_id: str
+) -> None:
+    cursor.execute(
+        "SELECT user_id FROM investigations WHERE id = %s", (str(investigation_id),)
+    )
+    result = cursor.fetchone()
+
+    if result is None:
+        raise HTTPException(status_code=404, detail="Investigation not found")
+
+    if str(result[0]) != user_id:
+        raise HTTPException(status_code=403, detail="Access denied")
+
+
 def get_claim_with_ownership(cursor, claim_id: uuid.UUID, user_id: str) -> dict:
     cursor.execute(
         """
