@@ -1,7 +1,7 @@
 services:
   database:
-    # image: docker.io/vinilmt/vestigium_database:latest
-    build: ./database
+    image: docker.io/vinilmt/vestigium_database:latest
+    # build: ./database
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -12,8 +12,8 @@ services:
       - pgdata:/var/lib/postgresql/data
 
   backend:
-    # image: docker.io/vinilmt/vestigium_backend:latest
-    build: ./backend
+    image: docker.io/vinilmt/vestigium_backend:latest
+    # build: ./backend
     environment:
       DATABASE_URL: postgresql://postgres:postgres@database:5432/vestigium
     env_file:
@@ -24,8 +24,8 @@ services:
       - database
 
   frontend:
-    # image: docker.io/vinilmt/vestigium_frontend:latest
-    build: ./frontend
+    image: docker.io/vinilmt/vestigium_frontend:latest
+    # build: ./frontend
     environment:
       API_URL: http://localhost:8000
     ports:
